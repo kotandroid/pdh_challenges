@@ -18,14 +18,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton:ImageButton
     private lateinit var prevButton:ImageButton
     private lateinit var questionTextView: TextView
+    private var correctCount: Float = 0f
+    private var faultCount: Float = 0f
 
     private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, true),
-        Question(R.string.question_africa, true),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
+        Question(R.string.question_australia, true, false, false),
+        Question(R.string.question_oceans, true, false, false),
+        Question(R.string.question_mideast, true, false, false),
+        Question(R.string.question_africa, true, false, false),
+        Question(R.string.question_americas, true,false, false),
+        Question(R.string.question_asia, true, false, false)
         )
 
     private var currentIndex = 0
@@ -67,15 +69,22 @@ class MainActivity : AppCompatActivity() {
 
         trueButton.setOnClickListener {
             checkAnswer(true)
+            questionBank[currentIndex].solved = true
+            checkPassed(currentIndex)
+            checkEnded()
         }
 
         falseButton.setOnClickListener {
             checkAnswer(false)
+            questionBank[currentIndex].solved = true
+            checkPassed(currentIndex)
+            checkEnded()
         }
 
         nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
             updateQuestion()
+            checkPassed(currentIndex)
         }
 
         prevButton.setOnClickListener {
@@ -85,6 +94,7 @@ class MainActivity : AppCompatActivity() {
                 currentIndex - 1
             }
             updateQuestion()
+            checkPassed(currentIndex)
         }
 
         questionTextView.setOnClickListener {
@@ -102,12 +112,47 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAnswer(userAnswer: Boolean){
         val correctAnswer = questionBank[currentIndex].answer
-        val messageResId = if (userAnswer == correctAnswer){
+        val result = userAnswer == correctAnswer
+        val messageResId = if (result){
             R.string.correct_toast
         }else{
             R.string.incorrect_toast
         }
 
+        if (result){
+            correctCount += 1
+            questionBank[currentIndex].passed = true
+        }
+        else{
+            faultCount += 1
+        }
+
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun checkPassed(currentIndex:Int){
+        if(questionBank[currentIndex].passed){
+            trueButton.isEnabled = false
+            falseButton.isEnabled = false
+        }
+        else{
+            trueButton.isEnabled = true
+            falseButton.isEnabled = true
+        }
+    }
+
+    private fun checkEnded(){
+        var result = true
+        for(q in questionBank){
+            if(!q.solved){
+               result =  false
+                break
+            }
+        }
+
+        if(result){
+            val resultRate = (correctCount/(correctCount + faultCount)) * 100
+            Toast.makeText(this, "모든 문제를 풀었습니다. 정답률 ${resultRate.toInt()}%", Toast.LENGTH_SHORT).show()
+        }
     }
 }
