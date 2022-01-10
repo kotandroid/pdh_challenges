@@ -18,7 +18,7 @@ class QuizViewModel : ViewModel() {
     )
 
     var currentIndex = 0
-    var isCheater = false
+    var cheatCount = 0
     var isAnswerShown = false
     var correctCount: Float = 0f
     var faultCount: Float = 0f
@@ -60,6 +60,7 @@ class QuizViewModel : ViewModel() {
 
     fun setCheated(cheated:Boolean){
         questionBank[currentIndex].cheated = cheated
+        cheatCount += 1
     }
 
     fun checkEnded():Boolean{

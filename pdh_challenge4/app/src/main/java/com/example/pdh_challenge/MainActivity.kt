@@ -105,15 +105,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         cheatButton.setOnClickListener {
-            val answerIsTrue = quizViewModel.currentQuestionAnswer
-            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                val options = ActivityOptions.makeClipRevealAnimation(it, 0, 0, it.width, it.height)
-                startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+            if (quizViewModel.cheatCount < 3){
+                val answerIsTrue = quizViewModel.currentQuestionAnswer
+                val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    val options = ActivityOptions.makeClipRevealAnimation(it, 0, 0, it.width, it.height)
+                    startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+                }
+                else{
+                    startActivityForResult(intent, REQUEST_CODE_CHEAT)
+                }
             }
             else{
-                startActivityForResult(intent, REQUEST_CODE_CHEAT)
+                cheatButton.isEnabled = false
+                Toast.makeText(this, "커닝 횟수 소진", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -123,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateQuestion()
+        cheatButton.isEnabled = quizViewModel.cheatCount < 3
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
