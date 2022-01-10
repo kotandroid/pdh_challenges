@@ -3,6 +3,7 @@ package com.example.pdh_challenge
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,7 @@ private const val EXTRA_ANSWER_IS_TRUE = "com.example.pdh_challenge.answer_is_tr
 class CheatActivity : AppCompatActivity() {
 
     private lateinit var answerTextView:TextView
+    private lateinit var apiTextView: TextView
     private lateinit var showAnswerButton:Button
     private val quizViewModel:QuizViewModel by lazy {
         ViewModelProvider(this).get(QuizViewModel::class.java)
@@ -40,6 +42,9 @@ class CheatActivity : AppCompatActivity() {
             showAnswer()
             setAnswerShownResult(quizViewModel.isAnswerShown)
         }
+
+        apiTextView = findViewById(R.id.api_text_view)
+        apiTextView.setText("API 레벨 ${Build.VERSION.SDK_INT}")
     }
 
     private fun setAnswerShownResult(isAnswerShown: Boolean){
