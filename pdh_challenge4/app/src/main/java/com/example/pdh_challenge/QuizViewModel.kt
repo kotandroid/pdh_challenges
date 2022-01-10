@@ -9,15 +9,17 @@ private const val TAG = "QuizViewModel"
 class QuizViewModel : ViewModel() {
 
     private val questionBank = listOf(
-        Question(R.string.question_australia, true, false, false),
-        Question(R.string.question_oceans, true, false, false),
-        Question(R.string.question_mideast, true, false, false),
-        Question(R.string.question_africa, true, false, false),
-        Question(R.string.question_americas, true,false, false),
-        Question(R.string.question_asia, true, false, false)
+        Question(R.string.question_australia, true),
+        Question(R.string.question_oceans, true),
+        Question(R.string.question_mideast, true),
+        Question(R.string.question_africa, true),
+        Question(R.string.question_americas, true),
+        Question(R.string.question_asia, true)
     )
 
     var currentIndex = 0
+    var isCheater = false
+    var isAnswerShown = false
     var correctCount: Float = 0f
     var faultCount: Float = 0f
 
@@ -32,6 +34,9 @@ class QuizViewModel : ViewModel() {
 
     val currentQuestionSolved: Boolean
         get() = questionBank[currentIndex].solved
+
+    val currentQuestionCheated: Boolean
+        get() = questionBank[currentIndex].cheated
 
     fun moveToNext() {
         currentIndex = (currentIndex + 1) % questionBank.size
@@ -51,6 +56,10 @@ class QuizViewModel : ViewModel() {
 
     fun setSolved(solved:Boolean){
         questionBank[currentIndex].solved = solved
+    }
+
+    fun setCheated(cheated:Boolean){
+        questionBank[currentIndex].cheated = cheated
     }
 
     fun checkEnded():Boolean{

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">pdh_challenge4</string>
+    <string name="app_name">pdh_challenge6</string>
     <string name="question_australia">캔버라는 호주의 수도다.</string>
     <string name="question_oceans">태평양은 대서양보다 더 크다.</string>
     <string name="question_mideast">수에즈 운하는 홍해와 인도양을 연결한다.</string>
@@ -12,4 +12,8 @@
     <string name="prev_button">Previous</string>
     <string name="correct_toast">정답!</string>
     <string name="incorrect_toast">틀렸음!</string>
+    <string name="warning_text">정말로 답을 보겠습니까?</string>
+    <string name="show_answer_button">정답 보기</string>
+    <string name="cheat_button">커닝하기!</string>
+    <string name="judgement_toast">커닝은 나쁜 짓이죠.</string>
 </resources>

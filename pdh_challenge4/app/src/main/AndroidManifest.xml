@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pdh_challenge">
         <activity
+            android:name=".CheatActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

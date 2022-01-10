@@ -1,5 +1,7 @@
 package com.example.pdh_challenge
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -14,12 +16,14 @@ import com.google.android.material.snackbar.Snackbar
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
+private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
     private lateinit var trueButton: Button // lateinit: 추후에 할 초기화를 컴파일러에게 약속함
     private lateinit var falseButton: Button
     private lateinit var nextButton:ImageButton
     private lateinit var prevButton:ImageButton
+    private lateinit var cheatButton:Button
     private lateinit var questionTextView: TextView
 
 
@@ -69,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         falseButton = findViewById(R.id.false_button)
         nextButton = findViewById(R.id.next_button)
         prevButton = findViewById(R.id.prev_button)
+        cheatButton = findViewById(R.id.cheat_button)
         questionTextView = findViewById(R.id.question_text_view)
 
         trueButton.setOnClickListener {
@@ -97,12 +102,30 @@ class MainActivity : AppCompatActivity() {
             checkPassed()
         }
 
+        cheatButton.setOnClickListener {
+            val answerIsTrue = quizViewModel.currentQuestionAnswer
+            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+        }
+
         questionTextView.setOnClickListener {
             quizViewModel.moveToNext()
             updateQuestion()
         }
 
         updateQuestion()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode != Activity.RESULT_OK){
+            return
+        }
+
+        if (requestCode == REQUEST_CODE_CHEAT){
+            quizViewModel.setCheated(data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false)
+        }
     }
 
     private fun updateQuestion(){
@@ -112,14 +135,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAnswer(userAnswer: Boolean){
         val correctAnswer = quizViewModel.currentQuestionAnswer
-        val result = userAnswer == correctAnswer
-        val messageResId = if (result){
-            R.string.correct_toast
-        }else{
-            R.string.incorrect_toast
+        val messageResId = when {
+            quizViewModel.currentQuestionCheated -> R.string.judgement_toast
+            userAnswer == correctAnswer -> R.string.correct_toast
+            else -> R.string.incorrect_toast
         }
 
-        if (result){
+        if (userAnswer == correctAnswer){
             quizViewModel.correctCount += 1
             quizViewModel.setPassed(true)
         }
