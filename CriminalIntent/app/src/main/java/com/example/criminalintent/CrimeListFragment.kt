@@ -1,5 +1,6 @@
 package com.example.criminalintent
 
+import android.content.Context
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
@@ -14,17 +15,29 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 
 private const val TAG = "CrimeListFragment"
 
 class CrimeListFragment:Fragment() {
 
+    interface Callbacks {
+        fun onCrimeSelected(crimeId: UUID)
+    }
+
+    private var callbacks: Callbacks? = null
+
     private lateinit var crimeRecyclerView:RecyclerView
     private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks?
     }
 
     override fun onCreateView(
@@ -52,6 +65,11 @@ class CrimeListFragment:Fragment() {
                 }
             }
         )
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     private fun updateUI(crimes: List<Crime>) {
@@ -83,7 +101,7 @@ class CrimeListFragment:Fragment() {
         }
 
         override fun onClick(p0: View?) {
-            Toast.makeText(context, "${crime.title} pressed!", Toast.LENGTH_SHORT).show()
+            callbacks?.onCrimeSelected(crime.id)
         }
     }
 
