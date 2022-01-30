@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
@@ -29,7 +30,7 @@ class CrimeListFragment:Fragment() {
     private var callbacks: Callbacks? = null
 
     private lateinit var crimeRecyclerView:RecyclerView
-    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
+    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList(), diffUtil)
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
@@ -73,8 +74,14 @@ class CrimeListFragment:Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
-        adapter = CrimeAdapter(crimes)
-        crimeRecyclerView.adapter = adapter
+        if (adapter?.crimes?.isEmpty() == true){
+            adapter = CrimeAdapter(crimes, diffUtil)
+            crimeRecyclerView.adapter = adapter
+        }
+        else{
+            val adapter = crimeRecyclerView.adapter as CrimeAdapter
+            adapter.submitList(crimes)
+        }
     }
 
     private inner class CrimeHolder(view: View):RecyclerView.ViewHolder(view), View.OnClickListener{
@@ -105,7 +112,8 @@ class CrimeListFragment:Fragment() {
         }
     }
 
-    private inner class CrimeAdapter(var crimes:List<Crime>):RecyclerView.Adapter<CrimeHolder>(){
+    private inner class CrimeAdapter(var crimes:List<Crime>, diffCallback: DiffUtil.ItemCallback<Crime>):
+        androidx.recyclerview.widget.ListAdapter<Crime, CrimeHolder>(diffCallback) {
 
 //        val VIEW_TYPE_1 = 0
 //        val VIEW_TYPE_2 = 1
@@ -141,6 +149,16 @@ class CrimeListFragment:Fragment() {
     companion object{
         fun newInstance():CrimeListFragment{
             return CrimeListFragment()
+        }
+
+        val diffUtil = object : DiffUtil.ItemCallback<Crime>() {
+            override fun areItemsTheSame(oldItem: Crime, newItem: Crime): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: Crime, newItem: Crime): Boolean {
+                return oldItem == newItem
+            }
         }
     }
 }
