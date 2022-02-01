@@ -30,7 +30,7 @@ class CrimeListFragment:Fragment() {
     private var callbacks: Callbacks? = null
 
     private lateinit var crimeRecyclerView:RecyclerView
-    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList(), diffUtil)
+    private var adapter: CrimeAdapter? = CrimeAdapter(diffUtil)
 
     private val crimeListViewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
@@ -62,7 +62,7 @@ class CrimeListFragment:Fragment() {
             Observer { crimes ->
                 crimes?.let{
                     Log.i(TAG, "Got crimes ${crimes.size}")
-                    updateUI(crimes)
+                    updateUI(crimes.toMutableList())
                 }
             }
         )
@@ -74,14 +74,7 @@ class CrimeListFragment:Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
-        if (adapter?.crimes?.isEmpty() == true){
-            adapter = CrimeAdapter(crimes, diffUtil)
-            crimeRecyclerView.adapter = adapter
-        }
-        else{
-            val adapter = crimeRecyclerView.adapter as CrimeAdapter
-            adapter.submitList(crimes)
-        }
+        (adapter as CrimeAdapter).submitList(crimes)
     }
 
     private inner class CrimeHolder(view: View):RecyclerView.ViewHolder(view), View.OnClickListener{
@@ -110,9 +103,11 @@ class CrimeListFragment:Fragment() {
         override fun onClick(p0: View?) {
             callbacks?.onCrimeSelected(crime.id)
         }
+
+
     }
 
-    private inner class CrimeAdapter(var crimes:List<Crime>, diffCallback: DiffUtil.ItemCallback<Crime>):
+    private inner class CrimeAdapter(diffCallback: DiffUtil.ItemCallback<Crime>):
         androidx.recyclerview.widget.ListAdapter<Crime, CrimeHolder>(diffCallback) {
 
 //        val VIEW_TYPE_1 = 0
@@ -129,21 +124,18 @@ class CrimeListFragment:Fragment() {
             return CrimeHolder(view)
         }
 
-//        override fun getItemViewType(position: Int): Int {
-//            if(crimes[position].requiresPolice){
-//                return VIEW_TYPE_1
-//            }
-//            else{
-//                return VIEW_TYPE_2
-//            }
-//        }
-
-        override fun getItemCount(): Int = crimes.size
-
         override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
-            val crime = crimes[position]
-            holder.bind(crime)
+            holder.bind(getItem(position))
         }
+
+        //        override fun getItemViewType(position: Int): Int {
+        //            if(crimes[position].requiresPolice){
+        //                return VIEW_TYPE_1
+        //            }
+        //            else{
+        //                return VIEW_TYPE_2
+        //            }
+        //        }
     }
 
     companion object{
