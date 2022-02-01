@@ -96,6 +96,13 @@ class CrimeListFragment:Fragment() {
     private fun updateUI(crimes: List<Crime>) {
         adapter = CrimeAdapter(crimes)
         crimeRecyclerView.adapter = adapter
+
+        if (adapter?.itemCount == 0){
+            view?.findViewById<TextView>(R.id.warnText)?.visibility = View.VISIBLE
+        }
+        else{
+            view?.findViewById<TextView>(R.id.warnText)?.visibility = View.GONE
+        }
     }
 
     private inner class CrimeHolder(view: View):RecyclerView.ViewHolder(view), View.OnClickListener{
