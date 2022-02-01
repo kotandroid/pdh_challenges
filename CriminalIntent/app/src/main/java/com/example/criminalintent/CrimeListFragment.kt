@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -91,7 +90,7 @@ class CrimeListFragment:Fragment() {
             this.crime = crime
             titleTextView.text = this.crime.title
 //            dateTextView.text = this.crime.date.toString()
-            dateTextView.text = DateFormat.format("EEEE, M/d. yyyy", this.crime.date)
+            dateTextView.text = DateFormat.format("EEEE, M/d. yyyy, hh:mm", this.crime.date)
             solvedImageView.visibility = if (crime.isSolved){
                 View.VISIBLE
             }
