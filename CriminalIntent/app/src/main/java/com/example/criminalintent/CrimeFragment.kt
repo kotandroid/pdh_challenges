@@ -11,12 +11,14 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import java.util.*
 
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
+private const val ARG_DATE = "date"
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 
@@ -35,6 +37,11 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         crime = Crime()
         val crimeId: UUID = arguments?.getSerializable(ARG_CRIME_ID) as UUID
         crimeDetailViewModel.loadCrime(crimeId)
+
+        setFragmentResultListener(DIALOG_DATE) { requestKey, bundle ->
+            val result = bundle.get(ARG_DATE) as Date
+            onDateSelected(result)
+        }
     }
 
     override fun onCreateView(
@@ -73,10 +80,7 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         }
 
         dateButton.setOnClickListener {
-            DatePickerFragment.newInstance(crime.date).apply {
-                setTargetFragment(this@CrimeFragment, REQUEST_DATE)
-                show(this@CrimeFragment.parentFragmentManager, DIALOG_DATE)
-            }
+            DatePickerFragment.newInstance(crime.date).show(this@CrimeFragment.parentFragmentManager, DIALOG_DATE)
         }
     }
 
