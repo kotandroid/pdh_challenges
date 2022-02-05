@@ -27,6 +27,7 @@ private const val ARG_CRIME_ID = "crime_id"
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 private const val REQUEST_CONTACT = 1
+private const val REQUEST_CALL = 2
 private const val DATE_FORMAT = "yyyy년 M월 d일 H시 m분, E요일"
 
 class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
@@ -111,6 +112,11 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
                     suspectButton.text = suspect
                 }
             }
+
+            requestCode == REQUEST_CALL && data != null -> {
+                val contactUri: Uri = data.data ?: return
+                
+            }
         }
     }
 
@@ -182,7 +188,7 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
             setOnClickListener {
                 startActivityForResult(pickContactIntent, REQUEST_CONTACT)
             }
-            
+
             val packageManager: PackageManager = requireActivity().packageManager
             val resolvedActivity: ResolveInfo? = packageManager.resolveActivity(pickContactIntent,
             PackageManager.MATCH_DEFAULT_ONLY)
