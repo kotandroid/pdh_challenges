@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -15,6 +16,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.*
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -106,8 +108,23 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
 
     private fun updatePhotoView(){
         if (photoFile.exists()) {
-            val bitmap = getScaledBitmap(photoFile.path, requireActivity())
-            photoView.setImageBitmap(bitmap)
+            val options = BitmapFactory.Options()
+            photoView.viewTreeObserver.addOnGlobalLayoutListener(
+                object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        options.inSampleSize = if (photoView.height > photoView.width) {
+                            photoView.height
+                        } else {
+                            photoView.width
+                        }
+                        photoView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    }
+                }
+            )
+            photoView.setImageBitmap(BitmapFactory.decodeFile(photoFile.path, options))
+
+//            val bitmap = getScaledBitmap(photoFile.path, requireActivity())
+//            photoView.setImageBitmap(bitmap)
         } else {
             photoView.setImageDrawable(null)
         }
