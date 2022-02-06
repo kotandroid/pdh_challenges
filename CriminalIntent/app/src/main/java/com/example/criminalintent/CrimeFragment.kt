@@ -26,6 +26,7 @@ import java.util.*
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
 private const val DIALOG_DATE = "DialogDate"
+private const val DIALOG_PHOTO = "DialogPhoto"
 private const val REQUEST_DATE = 0
 private const val REQUEST_CONTACT = 1
 private const val REQUEST_PHOTO = 2
@@ -181,6 +182,14 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         solvedCheckBox.apply{
             setOnCheckedChangeListener { _, isChecked ->
                 crime.isSolved = isChecked
+            }
+        }
+
+        photoView.setOnClickListener {
+            if (photoFile.exists()) {
+                PhotoFragment.newInstance(photoFile).apply {
+                    show(this@CrimeFragment.parentFragmentManager, DIALOG_PHOTO)
+                }
             }
         }
 
