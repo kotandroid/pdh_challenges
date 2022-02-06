@@ -112,7 +112,7 @@ class CrimeListFragment:Fragment() {
             this.crime = crime
             titleTextView.text = this.crime.title
 //            dateTextView.text = this.crime.date.toString()
-            dateTextView.text = DateFormat.format("EEEE, M/d. yyyy", this.crime.date)
+            dateTextView.text = DateFormat.format(getString(R.string.crime_locale_date), this.crime.date)
             solvedImageView.visibility = if (crime.isSolved){
                 View.VISIBLE
             }
