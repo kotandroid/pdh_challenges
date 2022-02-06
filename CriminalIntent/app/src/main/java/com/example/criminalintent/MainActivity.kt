@@ -2,7 +2,6 @@ package com.example.criminalintent
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import java.util.*
 
 private const val TAG = "MainActivity"

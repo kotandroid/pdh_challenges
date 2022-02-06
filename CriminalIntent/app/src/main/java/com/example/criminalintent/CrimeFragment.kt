@@ -1,5 +1,6 @@
 package com.example.criminalintent
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +18,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -38,6 +42,7 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
     private lateinit var solvedCheckBox: CheckBox
     private lateinit var reportButton: Button
     private lateinit var suspectButton: Button
+    private lateinit var callButton: Button
     private val crimeDetailViewModel: CrimeDetailViewModel by lazy {
         ViewModelProvider(this).get(CrimeDetailViewModel::class.java)
     }
@@ -61,6 +66,7 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
         reportButton = view.findViewById(R.id.crime_report) as Button
         suspectButton = view.findViewById(R.id.crime_suspect) as Button
+        callButton = view.findViewById(R.id.crime_call) as Button
 
         return view
     }
@@ -110,12 +116,21 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
                     crime.suspect = suspect
                     crimeDetailViewModel.saveCrime(crime)
                     suspectButton.text = suspect
-                }
-            }
 
-            requestCode == REQUEST_CALL && data != null -> {
-                val contactUri: Uri = data.data ?: return
-                
+                }
+
+                val numberUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+                val queryFileds2 = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val cursor2 = requireActivity().contentResolver
+                    .query(numberUri, queryFileds2, null, null, null)
+                cursor2?.use{
+                    if (it.count == 0) {
+                        return
+                    }
+
+                    it.moveToFirst()
+                    callButton.text = it.getString(0)
+                }
             }
         }
     }
@@ -184,8 +199,13 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         }
 
         suspectButton.apply {
+
             val pickContactIntent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
             setOnClickListener {
+                if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS
+                    ) != PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), 1004)
+                }
                 startActivityForResult(pickContactIntent, REQUEST_CONTACT)
             }
 
@@ -195,6 +215,14 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
             if (resolvedActivity == null) {
                 isEnabled = false
             }
+        }
+
+        callButton.setOnClickListener {
+                val number = Uri.parse("tel:"+callButton.text.toString())
+                val phoneNumIntent = Intent(Intent.ACTION_DIAL).apply {
+                    this.setData(number)
+                }
+                startActivity(phoneNumIntent)
         }
     }
 
