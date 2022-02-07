@@ -20,4 +20,7 @@
     <string name="crime_photo_button_description">Tomar foto de la escena del crimen</string>
     <string name="crime_photo_no_image_description">Foto de la escena del crimen (no establecida)</string>
     <string name="crime_photo_image_description">Foto de la escena del crime (establecida)</string>
+    <string name="crime_solved_description">Es un delito resuelto</string>
+    <string name="crime_list_solved_description">Delitos resueltos, nombre del delito %1$s, fecha de descubrimiento del delito %2$s. %3$s</string>
+    <string name="crime_list_unsolved_description">Delitos no resueltos, nombre del delito %1$s, fecha de descubrimiento del delito %2$s. %3$s</string>
 </resources>

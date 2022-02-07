@@ -119,6 +119,15 @@ class CrimeListFragment:Fragment() {
             else{
                 View.GONE
             }
+
+            val mdy = DateFormat.format("M/d yyyy", this.crime.date).toString().split(' ')
+            if (crime.isSolved) {
+                itemView.contentDescription = getString(R.string.crime_list_solved_description,
+                    crime.title, mdy[0], mdy[1])
+            } else {
+                itemView.contentDescription = getString(R.string.crime_list_unsolved_description,
+                    crime.title, mdy[0], mdy[1])
+            }
         }
 
         override fun onClick(p0: View?) {

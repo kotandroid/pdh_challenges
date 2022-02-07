@@ -40,6 +40,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_solved" />
+        app:srcCompat="@drawable/ic_solved"
+        android:contentDescription="@string/crime_solved_description"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

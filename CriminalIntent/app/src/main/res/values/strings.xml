@@ -17,4 +17,7 @@
     <string name="crime_report_suspect">용의자는 %s.</string>
     <string name="crime_report_subject">CriminalIntent 범죄 보고서</string>
     <string name="send_report">범죄 보고서 전송</string>
+    <string name="crime_solved_description">해결된 범죄입니다</string>
+    <string name="crime_list_solved_description">해결된 범죄, 범죄명 %1$s, 범죄 발견 날짜 %2$s. %3$s 입니다.</string>
+    <string name="crime_list_unsolved_description">해결되지 않은 범죄, 범죄명 %1$s, 범죄 발견 날짜 %2$s. %3$s 입니다.</string>
 </resources>
