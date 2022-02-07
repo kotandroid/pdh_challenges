@@ -4,6 +4,9 @@
     <string name="crime_title_label">제목</string>
     <string name="crime_details_label">상세내역</string>
     <string name="crime_solved_label">해결됨</string>
+    <string name="crime_photo_button_description">범죄 현장 사진 찍기</string>
+    <string name="crime_photo_no_image_description">범죄 현장 사진 없음</string>
+    <string name="crime_photo_image_description">범죄 현장 사진 있음</string>
     <string name="new_crime">새로운 범죄</string>
     <string name="crime_suspect_text">용의자 선택</string>
     <string name="crime_report_text">범죄 보고서 전송</string>
