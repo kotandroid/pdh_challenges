@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -24,6 +23,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import java.io.File
 import java.util.*
+import kotlin.properties.Delegates
 
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
@@ -50,11 +50,17 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         ViewModelProvider(this).get(CrimeDetailViewModel::class.java)
     }
 
+    private var width: Int? = null
+    private var height: Int? = null
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         crime = Crime()
         val crimeId: UUID = arguments?.getSerializable(ARG_CRIME_ID) as UUID
         crimeDetailViewModel.loadCrime(crimeId)
+
     }
 
     override fun onCreateView(
@@ -71,9 +77,19 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         suspectButton = view.findViewById(R.id.crime_suspect) as Button
         photoButton = view.findViewById(R.id.crime_camera) as ImageButton
         photoView = view.findViewById(R.id.crime_photo) as ImageView
+        photoView.viewTreeObserver.addOnGlobalLayoutListener(
+            object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    width = photoView.measuredWidth
+                    height = photoView.measuredHeight
+                    photoView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            }
+        )
 
         return view
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -103,26 +119,12 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         if (crime.suspect.isNotEmpty()) {
             suspectButton.text = crime.suspect
         }
-        updatePhotoView()
+        updatePhotoView(width!!, height!!)
     }
 
-    private fun updatePhotoView(){
+    private fun updatePhotoView(width:Int, height:Int){
         if (photoFile.exists()) {
-            val options = BitmapFactory.Options()
-            photoView.viewTreeObserver.addOnGlobalLayoutListener(
-                object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        options.inSampleSize = if (photoView.height > photoView.width) {
-                            photoView.height
-                        } else {
-                            photoView.width
-                        }
-                        photoView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    }
-                }
-            )
-            photoView.setImageBitmap(BitmapFactory.decodeFile(photoFile.path, options))
-
+            photoView.setImageBitmap(getScaledBitmap(photoFile.path, width, height))
 //            val bitmap = getScaledBitmap(photoFile.path, requireActivity())
 //            photoView.setImageBitmap(bitmap)
         } else {
@@ -155,7 +157,7 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
             requestCode == REQUEST_PHOTO -> {
                 requireActivity().revokeUriPermission(photoUri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                updatePhotoView()
+                updatePhotoView(width!!, height!!)
             }
         }
     }
@@ -250,9 +252,9 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
             val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             val resolvedActivity:ResolveInfo? = packageManager.resolveActivity(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
 
-            if (resolvedActivity == null){
-                isEnabled = false
-            }
+//            if (resolvedActivity == null){
+//                isEnabled = false
+//            }
 
             setOnClickListener {
                 captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri) // 전체 해상도 이미지를 저장할 파일 시스템의 위치 알려주기
@@ -280,6 +282,7 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         requireActivity().revokeUriPermission(photoUri,
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
     }
+
 
     override fun onDateSelected(date: Date) {
         crime.date = date
