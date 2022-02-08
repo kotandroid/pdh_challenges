@@ -102,34 +102,36 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
             resultCode != Activity.RESULT_OK -> return
 
             requestCode == REQUEST_CONTACT && data != null -> {
-                val contactUri: Uri = data.data ?: return
-                val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+//                val contactUri: Uri = data.data ?: return
+//                val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+//                val cursor = requireActivity().contentResolver
+//                    .query(contactUri, queryFields, null, null, null)
+//                cursor?.use {
+//                    if (it.count == 0) {
+//                        return
+//                    }
+//
+//                    it.moveToFirst()
+//                    val suspect = it.getString(0)
+//                    crime.suspect = suspect
+//                    crimeDetailViewModel.saveCrime(crime)
+//                    suspectButton.text = suspect
+//
+//                }
+                val numberUri = data.data ?: return
+                val queryFileds = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER)
                 val cursor = requireActivity().contentResolver
-                    .query(contactUri, queryFields, null, null, null)
-                cursor?.use {
+                    .query(numberUri, queryFileds, null, null, null)
+                cursor?.use{
                     if (it.count == 0) {
                         return
                     }
 
                     it.moveToFirst()
-                    val suspect = it.getString(0)
-                    crime.suspect = suspect
+                    crime.suspect = it.getString(0)
                     crimeDetailViewModel.saveCrime(crime)
-                    suspectButton.text = suspect
-
-                }
-
-                val numberUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
-                val queryFileds2 = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
-                val cursor2 = requireActivity().contentResolver
-                    .query(numberUri, queryFileds2, null, null, null)
-                cursor2?.use{
-                    if (it.count == 0) {
-                        return
-                    }
-
-                    it.moveToFirst()
-                    callButton.text = it.getString(0)
+                    suspectButton.text = crime.suspect
+                    callButton.text = it.getString(1)
                 }
             }
         }
@@ -200,7 +202,8 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
 
         suspectButton.apply {
 
-            val pickContactIntent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+//            val pickContactIntent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+            val pickContactIntent = Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
             setOnClickListener {
                 if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS
                     ) != PackageManager.PERMISSION_GRANTED){
