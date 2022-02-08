@@ -80,8 +80,11 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         photoView.viewTreeObserver.addOnGlobalLayoutListener(
             object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
-                    width = photoView.measuredWidth
-                    height = photoView.measuredHeight
+                    photoView.post {
+                        width = photoView.measuredWidth
+                        height = photoView.measuredHeight
+                    }
+
                     photoView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
             }
