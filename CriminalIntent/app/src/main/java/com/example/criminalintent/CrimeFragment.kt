@@ -2,6 +2,7 @@ package com.example.criminalintent
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -18,6 +19,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -46,12 +48,42 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
     private val crimeDetailViewModel: CrimeDetailViewModel by lazy {
         ViewModelProvider(this).get(CrimeDetailViewModel::class.java)
     }
+    private lateinit var contractPermission: ActivityResultLauncher<String>
+    private lateinit var pickForResult: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         crime = Crime()
         val crimeId: UUID = arguments?.getSerializable(ARG_CRIME_ID) as UUID
         crimeDetailViewModel.loadCrime(crimeId)
+
+        contractPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+            isGranted ->
+                if (!isGranted) {
+                    val dialog = AlertDialog.Builder(requireContext())
+                    dialog.setTitle("용의자 번호를 얻으려면 연락처 권한이 필요합니다.")
+                    dialog.setNegativeButton("확인", null)
+                    dialog.show()
+                }
+        }
+
+        pickForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            if (it.resultCode == Activity.RESULT_OK){
+                val numberUri = it.data?.data as Uri
+                val queryFileds = arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val cursor = requireActivity().contentResolver
+                    .query(numberUri, queryFileds, null, null, null)
+                cursor?.use{
+                    if (it.count != 0) {
+                        it.moveToFirst()
+                        crime.suspect = it.getString(0)
+                        crimeDetailViewModel.saveCrime(crime)
+                        suspectButton.text = crime.suspect
+                        callButton.text = it.getString(1)
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -185,22 +217,21 @@ class CrimeFragment:Fragment(), DatePickerFragment.Callbacks {
         }
 
         suspectButton.apply {
-//            val pickContactIntent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
             val pickContactIntent = Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
             setOnClickListener {
                 if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS
                     ) != PackageManager.PERMISSION_GRANTED){
-                    requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), 1004)
+                    contractPermission.launch(Manifest.permission.READ_CONTACTS)
                 }
-                startActivityForResult(pickContactIntent, REQUEST_CONTACT)
+                pickForResult.launch(pickContactIntent)
             }
 
             val packageManager: PackageManager = requireActivity().packageManager
             val resolvedActivity: ResolveInfo? = packageManager.resolveActivity(pickContactIntent,
             PackageManager.MATCH_DEFAULT_ONLY)
-            if (resolvedActivity == null) {
-                isEnabled = false
-            }
+//            if (resolvedActivity == null) {
+//                isEnabled = false
+//            }
         }
 
         callButton.setOnClickListener {
