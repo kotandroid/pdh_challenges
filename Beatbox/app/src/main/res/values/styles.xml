@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="BeatBoxButton" parent="Widget.AppCompat.Button">
-        <item name="android:backgroundTint">@color/dark_blue</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/button_beat_box</item>
     </style>
 </resources>
