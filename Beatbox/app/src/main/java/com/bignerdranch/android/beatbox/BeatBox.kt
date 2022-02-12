@@ -21,15 +21,9 @@ class BeatBox(private val assets: AssetManager) {
         sounds = loadSounds()
     }
 
-    fun playWithRate(sound:Sound, rate:Float){
-        sound.soundId?.let {
-            soundPool.play(it, 1.0f, 1.0f, 1, 0, rate)
-        }
-    }
-
-    fun play(sound:Sound){
+    fun play(sound:Sound, rate:Float){
         sound.soundId?.let{
-            soundPool.play(it, 1.0f, 1.0f, 1, 0, 1.0f)
+            soundPool.play(it, 1.0f, 1.0f, 1, 0, rate)
         }
     }
 

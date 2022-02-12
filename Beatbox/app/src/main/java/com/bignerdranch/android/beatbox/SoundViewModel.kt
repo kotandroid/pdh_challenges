@@ -1,20 +1,21 @@
 package com.bignerdranch.android.beatbox
 
+import android.util.Log
+import android.widget.SeekBar
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 
 class SoundViewModel(private val beatBox:BeatBox) : BaseObservable() {
 
-    fun onSeekbarChanged(progress:Int){
+    fun onSeekbarChanged(seekBar:SeekBar, progress:Int, fromUser:Boolean){
+        playBackSpeedInt = progress
         playBackSpeed = progress.toFloat() / 100
-        sound?.let {
-            beatBox.playWithRate(it, playBackSpeed)
-        }
+        Log.d("TEST", playBackSpeedInt.toString())
     }
 
     fun onButtonClicked() {
         sound?.let{
-            beatBox.play(it)
+            beatBox.play(it, playBackSpeed)
         }
     }
 
@@ -34,4 +35,7 @@ class SoundViewModel(private val beatBox:BeatBox) : BaseObservable() {
             field = speed
             notifyChange()
         }
+
+    @get:Bindable
+    var playBackSpeedInt: Int = 0
 }
