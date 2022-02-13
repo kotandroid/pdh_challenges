@@ -26,13 +26,14 @@
                 android:id="@+id/playback_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{String.format(@string/playback_speed, String.valueOf(viewModel.playBackSpeedInt))}" />
+                android:text="@{String.format(@string/playback_speed, String.valueOf(viewModel.playBackSpeed))}" />
 
             <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:onProgressChanged="@{viewModel.onSeekbarChanged}"
-                android:progress="@={viewModel.playBackSpeedInt}"/>
+                android:max="100"
+                android:onProgressChanged="@{(seekBar, progress, fromUser) -> viewModel.onSeekbarChanged(progress)}"
+                android:progress="@={viewModel.playBackSpeed}"/>
         </LinearLayout>
 
     </LinearLayout>

@@ -4,18 +4,21 @@ import android.util.Log
 import android.widget.SeekBar
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
+import androidx.databinding.BindingAdapter
+import androidx.lifecycle.MutableLiveData
 
 class SoundViewModel(private val beatBox:BeatBox) : BaseObservable() {
 
-    fun onSeekbarChanged(seekBar:SeekBar, progress:Int, fromUser:Boolean){
-        playBackSpeedInt = progress
-        playBackSpeed = progress.toFloat() / 100
-        Log.d("TEST", playBackSpeedInt.toString())
+    val playBackSpeed = MutableLiveData(0)
+
+    fun onSeekbarChanged(progress:Int){
+        playBackSpeed.value = progress
+        Log.d("TEST", progress.toString())
     }
 
     fun onButtonClicked() {
         sound?.let{
-            beatBox.play(it, playBackSpeed)
+            beatBox.play(it, (playBackSpeed.value?.toFloat()!!.div(100)))
         }
     }
 
@@ -29,13 +32,4 @@ class SoundViewModel(private val beatBox:BeatBox) : BaseObservable() {
     val title: String?
         get() = sound?.name
 
-    @get:Bindable
-    var playBackSpeed: Float = 1.0f
-        set(speed) {
-            field = speed
-            notifyChange()
-        }
-
-    @get:Bindable
-    var playBackSpeedInt: Int = 0
 }
