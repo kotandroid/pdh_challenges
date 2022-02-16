@@ -4,6 +4,6 @@ import com.bignerdranch.android.photogallery.GalleryItem
 import com.google.gson.annotations.SerializedName
 
 class PhotoResponse {
-    @SerializedName("photo")
+    @SerializedName("photos")
     lateinit var galleryItems: List<GalleryItem>
 }
