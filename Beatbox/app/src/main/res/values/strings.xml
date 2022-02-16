@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Beatbox</string>
-    <string name="playback_speed">Playback Speed %1$s percent</string>
+    <string name="playback_speed">Playback Speed %1$s</string>
 </resources>
