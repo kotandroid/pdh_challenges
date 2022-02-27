@@ -2,13 +2,17 @@ package com.bignerdranch.android.photogallery
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Message
 import android.util.Log
+import android.widget.ImageView
+import androidx.collection.LruCache
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.recyclerview.widget.RecyclerView
 import java.util.concurrent.ConcurrentHashMap
 
 private const val TAG = "ThumbnailDownloader"
@@ -48,6 +52,7 @@ class ThumbnailDownloader<in T>(
     private var hasQuit = false
     private lateinit var requestHandler:Handler
     private val requestMap = ConcurrentHashMap<T, String>()
+    private lateinit var imgCache: LruCache<String, Bitmap>;
     private val flickrFetchr = FlickrFetchr()
 
 
@@ -68,18 +73,31 @@ class ThumbnailDownloader<in T>(
                 }
             }
         }
+
+        imgCache = LruCache<String, Bitmap>((Runtime.getRuntime().maxMemory() / 1024).toInt())
     }
 
     fun queueThumbnail(target:T, url:String){
         Log.i(TAG, "Got a URL: $url")
+
         requestMap[target] = url
         requestHandler.obtainMessage(MESSAGE_DOWNLOAD, target)
             .sendToTarget()
+
     }
 
     private fun handleRequest(target: T){
         val url = requestMap[target] ?: return
-        val bitmap = flickrFetchr.fetchPhoto(url) ?: return
+        var bitmap = imgCache.get(url)
+        if (bitmap != null){
+            Log.d("LruCache", "find in image Cache")
+        }
+
+        if (bitmap == null){
+            bitmap = flickrFetchr.fetchPhoto(url) ?: return
+            imgCache.put(url, bitmap)
+            Log.d("LruCache", "Can't find in image Cache")
+        }
 
         responseHandler.post(Runnable {
             if (requestMap[target] != url || hasQuit) {
