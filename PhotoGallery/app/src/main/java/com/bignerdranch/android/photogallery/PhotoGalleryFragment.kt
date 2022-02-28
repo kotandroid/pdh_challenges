@@ -29,9 +29,9 @@ class PhotoGalleryFragment:Fragment() {
 
         retainInstance = true
         photoGalleryViewModel = ViewModelProvider(this).get(PhotoGalleryViewModel::class.java)
-        val responseHandler = Handler()
+        val responseHandler = Handler() // main 스레드의 핸들러
         thumbnailDownloader =
-            ThumbnailDownloader(responseHandler) { photoHolder, bitmap ->
+            ThumbnailDownloader(responseHandler) { photoHolder, bitmap -> //onThumbnailDownloaded 영역
                 val drawable = BitmapDrawable(resources, bitmap)
                 photoHolder.bindDrawable(drawable)
             }
@@ -99,6 +99,19 @@ class PhotoGalleryFragment:Fragment() {
             ) ?: ColorDrawable()
             holder.bindDrawable(placeholder)
             thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
+
+            // preload??
+            if (position <= galleryItems.size) {
+                val endPosition = if (position + 10 > galleryItems.size) {
+                    galleryItems.size
+                } else {
+                    position + 10
+                }
+                galleryItems.subList(position, endPosition)
+                    .map { it.url }.forEach {
+                        thumbnailDownloader.queueThumbnail(holder, it)
+                    }
+            }
         }
     }
 

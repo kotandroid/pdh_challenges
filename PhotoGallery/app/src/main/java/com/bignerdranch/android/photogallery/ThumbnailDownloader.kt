@@ -89,8 +89,9 @@ class ThumbnailDownloader<in T>(
     private fun handleRequest(target: T){
         val url = requestMap[target] ?: return
         var bitmap = imgCache.get(url)
-        if (bitmap != null){
-            Log.d("LruCache", "find in image Cache")
+
+        if (bitmap != null) {
+            Log.d("LruCache", "Find in image Cache")
         }
 
         if (bitmap == null){
