@@ -1,5 +1,6 @@
 package com.bignerdranch.android.photogallery
 
+import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -7,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
@@ -99,6 +101,8 @@ class PhotoGalleryFragment:Fragment() {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     Log.d(TAG, "QueryTextSubmit: $query")
                     photoGalleryViewModel.fetchPhotos(query)
+                    hideKeyboard()
+                    searchView.onActionViewCollapsed()
                     return true
                 }
 
@@ -112,6 +116,11 @@ class PhotoGalleryFragment:Fragment() {
                 searchView.setQuery(photoGalleryViewModel.searchTerm, false)
             }
         }
+    }
+
+    private fun hideKeyboard() {
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
