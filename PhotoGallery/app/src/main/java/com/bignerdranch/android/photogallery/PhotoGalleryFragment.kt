@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -18,6 +19,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bignerdranch.android.photogallery.api.FlickrApi
 import retrofit2.Call
@@ -32,6 +34,7 @@ class PhotoGalleryFragment:Fragment() {
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
     private lateinit var photoRecyclerView: RecyclerView
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +63,7 @@ class PhotoGalleryFragment:Fragment() {
 
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
         photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
+        progressBar = view.findViewById(R.id.image_progress)
 
         return view
     }
@@ -151,6 +155,15 @@ class PhotoGalleryFragment:Fragment() {
                 requireContext(),
                 R.drawable.bill_up_close
             ) ?: ColorDrawable()
+            if (position == 0) {
+                photoRecyclerView.visibility = View.GONE
+                progressBar.visibility = View.VISIBLE
+            } else if (position >= itemCount) {
+                photoRecyclerView.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
+                notifyDataSetChanged()
+            }
+
             holder.bindDrawable(placeholder)
             thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
         }
