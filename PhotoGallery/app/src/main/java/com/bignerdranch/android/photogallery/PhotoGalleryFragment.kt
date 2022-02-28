@@ -136,10 +136,10 @@ class PhotoGalleryFragment:Fragment() {
             }
             R.id.menu_item_toggle_polling -> {
                 val isPolling = QueryPreferences.isPolling(requireContext())
-                if (isPolling) {
+                if (isPolling) { // PollWorker가 실행 중인 경우
                     WorkManager.getInstance().cancelUniqueWork(POLL_WORK)
                     QueryPreferences.setPolling(requireContext(), false)
-                } else {
+                } else { // PollWorker가 실행 중이지 않은 경우
                     // 작업을 실행하기 위한 제약 조건 추가
                     val constraints = Constraints.Builder()
                         .setRequiredNetworkType(NetworkType.UNMETERED)
