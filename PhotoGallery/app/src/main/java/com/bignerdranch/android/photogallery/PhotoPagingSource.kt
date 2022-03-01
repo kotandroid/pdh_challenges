@@ -1,17 +1,17 @@
 package com.bignerdranch.android.photogallery
 
+
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.bignerdranch.android.photogallery.api.PhotoResponse
 
 class PhotoPagingSource(
-    private val photos:List<GalleryItem>?
+    private val photoGalleryViewModel:PhotoGalleryViewModel
 ):PagingSource<Int, GalleryItem>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, GalleryItem> {
         val pageNumber = params.key ?: 0
         return try{
-            val items = photos
+            val items = photoGalleryViewModel.galleryItemLiveData.value
             LoadResult.Page(
                 data = items!!,
                 prevKey = if (pageNumber > 0) pageNumber - 1 else null,
