@@ -47,6 +47,11 @@ class PhotoGalleryFragment:Fragment() {
             ThumbnailDownloader(responseHandler) { photoHolder, bitmap ->
                 val drawable = BitmapDrawable(resources, bitmap)
                 photoHolder.bindDrawable(drawable)
+
+                if (photoHolder.layoutPosition == (photoRecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()){
+                    progressBar.visibility = View.GONE
+                    photoRecyclerView.visibility = View.VISIBLE
+                }
             }
         lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
     }
@@ -65,6 +70,8 @@ class PhotoGalleryFragment:Fragment() {
         photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
         progressBar = view.findViewById(R.id.image_progress)
 
+        photoRecyclerView.visibility = View.INVISIBLE
+        progressBar.visibility = View.VISIBLE
         return view
     }
 
@@ -155,14 +162,6 @@ class PhotoGalleryFragment:Fragment() {
                 requireContext(),
                 R.drawable.bill_up_close
             ) ?: ColorDrawable()
-            if (position == 0) {
-                photoRecyclerView.visibility = View.GONE
-                progressBar.visibility = View.VISIBLE
-            } else if (position >= itemCount) {
-                photoRecyclerView.visibility = View.VISIBLE
-                progressBar.visibility = View.GONE
-                notifyDataSetChanged()
-            }
 
             holder.bindDrawable(placeholder)
             thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
