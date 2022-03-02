@@ -12,7 +12,7 @@ class PhotoGalleryViewModel:ViewModel() {
     fun getContent(): Flow<PagingData<GalleryItem>> {
         return Pager(
             config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { PhotoPagingSource(this)}
+            pagingSourceFactory = { PhotoPagingSource(galleryItemLiveData)}
         ).flow.cachedIn(viewModelScope)
     }
 }

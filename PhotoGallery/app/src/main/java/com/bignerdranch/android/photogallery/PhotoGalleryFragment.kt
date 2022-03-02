@@ -51,9 +51,14 @@ class PhotoGalleryFragment:Fragment() {
         photoGalleryViewModel.galleryItemLiveData.observe(
             viewLifecycleOwner,
             Observer {
-//                pagingAdapter.submitData(this.lifecycle, it)
+                lifecycleScope.launchWhenStarted {
+                    photoGalleryViewModel.getContent().collectLatest {
+                        pagingAdapter.submitData(it)
+                    }
+                }
             }
         )
+
     }
 
     private class PhotoHolder(itemTextView: TextView):RecyclerView.ViewHolder(itemTextView){
