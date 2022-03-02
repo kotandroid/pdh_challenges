@@ -40,7 +40,7 @@ class PhotoGalleryFragment:Fragment() {
         pagingAdapter = PagingAdapter()
 
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
-        photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
+        photoRecyclerView.layoutManager = GridLayoutManager(context, getString(R.string.col_num).toInt())
         photoRecyclerView.adapter = pagingAdapter
 
         return view
@@ -51,9 +51,14 @@ class PhotoGalleryFragment:Fragment() {
         photoGalleryViewModel.galleryItemLiveData.observe(
             viewLifecycleOwner,
             Observer {
-//                pagingAdapter.submitData(this.lifecycle, it)
+                lifecycleScope.launchWhenStarted {
+                    photoGalleryViewModel.getContent().collectLatest {
+                        pagingAdapter.submitData(it)
+                    }
+                }
             }
         )
+
     }
 
     private class PhotoHolder(itemTextView: TextView):RecyclerView.ViewHolder(itemTextView){

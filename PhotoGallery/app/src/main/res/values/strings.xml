@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PhotoGallery</string>
+    <string name="col_num">3</string>
 </resources>
