@@ -3,6 +3,7 @@ package com.bignerdranch.android.photogallery.api
 import com.bignerdranch.android.photogallery.FlickrResponse
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface FlickrApi {
 
@@ -11,5 +12,5 @@ interface FlickrApi {
     "&format=json" +
     "&nojsoncallback=1" +
     "&extras=url_s")
-    fun fetchPhotos():Call<PhotoResponse>
+    fun fetchPhotos(@Query("page") pageNum:Int ):Call<PhotoResponse>
 }

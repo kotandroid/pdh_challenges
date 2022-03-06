@@ -7,12 +7,10 @@ import androidx.paging.*
 import kotlinx.coroutines.flow.Flow
 
 class PhotoGalleryViewModel:ViewModel() {
-    val galleryItemLiveData:LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
+//    val galleryItemLiveData:LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
 
-    fun getContent(): Flow<PagingData<GalleryItem>> {
-        return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { PhotoPagingSource(galleryItemLiveData)}
+    val listData =  Pager(
+            config = PagingConfig(pageSize = 5),
+            pagingSourceFactory = { PhotoPagingSource(FlickrFetchr())}
         ).flow.cachedIn(viewModelScope)
-    }
 }

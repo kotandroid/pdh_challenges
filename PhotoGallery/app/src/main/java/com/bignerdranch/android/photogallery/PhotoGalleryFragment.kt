@@ -48,17 +48,18 @@ class PhotoGalleryFragment:Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        photoGalleryViewModel.galleryItemLiveData.observe(
-            viewLifecycleOwner,
-            Observer {
-                lifecycleScope.launchWhenStarted {
-                    photoGalleryViewModel.getContent().collectLatest {
-                        pagingAdapter.submitData(it)
-                    }
-                }
-            }
-        )
+//        photoGalleryViewModel.galleryItemLiveData.observe(
+//            viewLifecycleOwner,
+//            Observer {
+//
+//            }
+//        )
 
+        lifecycleScope.launch {
+            photoGalleryViewModel.listData.collect {
+                pagingAdapter.submitData(it)
+            }
+        }
     }
 
     private class PhotoHolder(itemTextView: TextView):RecyclerView.ViewHolder(itemTextView){

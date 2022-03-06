@@ -6,16 +6,16 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 
 class PhotoPagingSource(
-    private val photoGalleryLiveData: LiveData<List<GalleryItem>>
+    private val flickrFetchr: FlickrFetchr
 ):PagingSource<Int, GalleryItem>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, GalleryItem> {
-        val pageNumber = params.key ?: 0
+        val pageNumber = params.key ?: 1
         return try{
-            val items = photoGalleryLiveData.value
+            val items = flickrFetchr.fetchPhotos(pageNumber).value
             LoadResult.Page(
                 data = items!!,
-                prevKey = if (pageNumber > 0) pageNumber - 1 else null,
+                prevKey = if (pageNumber > 1) pageNumber - 1 else null,
                 nextKey = if (items.isNotEmpty()) pageNumber + 1 else null
             )
         } catch (e:Exception) {

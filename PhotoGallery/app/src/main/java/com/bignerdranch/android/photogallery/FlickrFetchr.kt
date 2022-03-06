@@ -27,13 +27,14 @@ class FlickrFetchr {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
-    fun fetchPhotos():LiveData<List<GalleryItem>> {
+    fun fetchPhotos(pageNum:Int):LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
-        val flickrRequest: Call<PhotoResponse> = flickrApi.fetchPhotos()
+        val flickrRequest: Call<PhotoResponse> = flickrApi.fetchPhotos(pageNum)
 
         flickrRequest.enqueue(object: Callback<PhotoResponse> {
             override fun onResponse(call: Call<PhotoResponse>, response: Response<PhotoResponse>) {
                 Log.d(TAG, "Response received")
+                Log.d(TAG, response.raw().toString())
                 // 파싱
                 val photoResponse:PhotoResponse? = response.body()
                 var galleryItems:List<GalleryItem> = photoResponse?.galleryItems
