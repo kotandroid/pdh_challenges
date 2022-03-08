@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.webkit.WebView
 
 class PhotoPageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +20,17 @@ class PhotoPageActivity : AppCompatActivity() {
             fm.beginTransaction()
                 .add(R.id.fragment_container, fragment)
                 .commit()
+        }
+    }
+
+    override fun onBackPressed() {
+        val fm = supportFragmentManager
+        val currentFragment = fm.findFragmentById(R.id.fragment_container) as PhotoPageFragment
+        val webView = currentFragment.requireView() as WebView
+        if (webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
         }
     }
 
