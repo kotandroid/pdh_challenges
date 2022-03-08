@@ -161,7 +161,7 @@ class PhotoGalleryFragment:VisibleFragment() {
         }
     }
 
-    private class PhotoHolder(itemImageView: ImageView):RecyclerView.ViewHolder(itemImageView){
+    private inner class PhotoHolder(itemImageView: ImageView):RecyclerView.ViewHolder(itemImageView){
         val bindDrawable: (Drawable) -> Unit = itemImageView::setImageDrawable
     }
 
