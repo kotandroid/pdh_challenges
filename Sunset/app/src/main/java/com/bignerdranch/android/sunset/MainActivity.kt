@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
 
+    private var shouldRise:Boolean = false
     private lateinit var sceneView:View
     private lateinit var sunView:View
     private lateinit var skyView:View
@@ -44,26 +45,52 @@ class MainActivity : AppCompatActivity() {
         val sunYstart = sunView.top.toFloat()
         val sunYEnd = skyView.height.toFloat()
 
-        val heightAnimator = ObjectAnimator
-            .ofFloat(sunView, "y", sunYstart, sunYEnd)
-            .setDuration(3000)
+        if (!shouldRise){
+            val heightAnimator = ObjectAnimator
+                .ofFloat(sunView, "y", sunYstart, sunYEnd)
+                .setDuration(3000)
 
-        heightAnimator.interpolator = AccelerateInterpolator()
+            heightAnimator.interpolator = AccelerateInterpolator()
 
-        val sunsetSkyAnimator = ObjectAnimator
-            .ofInt(skyView, "backgroundColor", blueSkyColor, sunsetSkyColor)
-            .setDuration(3000)
-        sunsetSkyAnimator.setEvaluator(ArgbEvaluator())
+            val sunsetSkyAnimator = ObjectAnimator
+                .ofInt(skyView, "backgroundColor", blueSkyColor, sunsetSkyColor)
+                .setDuration(3000)
+            sunsetSkyAnimator.setEvaluator(ArgbEvaluator())
 
-        val nightSkyAnimator = ObjectAnimator
-            .ofInt(skyView, "backgroundColor", sunsetSkyColor, nightSkyColor)
-            .setDuration(1500)
-        nightSkyAnimator.setEvaluator(ArgbEvaluator())
+            val nightSkyAnimator = ObjectAnimator
+                .ofInt(skyView, "backgroundColor", sunsetSkyColor, nightSkyColor)
+                .setDuration(1500)
+            nightSkyAnimator.setEvaluator(ArgbEvaluator())
 
-        val animatorSet = AnimatorSet()
-        animatorSet.play(heightAnimator)
-            .with(sunsetSkyAnimator) // 같이 작동하는 애니메이션
-            .before(nightSkyAnimator) // 이 애니메이션 전에 작동하기
-        animatorSet.start()
+            val animatorSet = AnimatorSet()
+            animatorSet.play(heightAnimator)
+                .with(sunsetSkyAnimator) // 같이 작동하는 애니메이션
+                .before(nightSkyAnimator) // 이 애니메이션 전에 작동하기
+            animatorSet.start()
+            shouldRise = true
+        } else {
+            val heightAnimator = ObjectAnimator
+                .ofFloat(sunView, "y", sunYEnd, sunYstart)
+                .setDuration(3000)
+
+            heightAnimator.interpolator = AccelerateInterpolator()
+
+            val sunsetSkyAnimator = ObjectAnimator
+                .ofInt(skyView, "backgroundColor", sunsetSkyColor, blueSkyColor)
+                .setDuration(3000)
+            sunsetSkyAnimator.setEvaluator(ArgbEvaluator())
+
+            val nightSkyAnimator = ObjectAnimator
+                .ofInt(skyView, "backgroundColor", nightSkyColor, sunsetSkyColor)
+                .setDuration(1500)
+            nightSkyAnimator.setEvaluator(ArgbEvaluator())
+
+            val animatorSet = AnimatorSet()
+            animatorSet.play(nightSkyAnimator)
+                .with(heightAnimator) // 같이 작동하는 애니메이션
+                .before(sunsetSkyAnimator) // 이 애니메이션 전에 작동하기
+            animatorSet.start()
+            shouldRise = false
+        }
     }
 }
