@@ -1,6 +1,7 @@
 package com.bignerdranch.android.draganddraw
 
 import android.graphics.PointF
+import android.os.Parcelable
 
 class Box(val start:PointF) {
     var end: PointF = start
@@ -18,4 +19,5 @@ class Box(val start:PointF) {
 
     val bottom:Float
         get() = Math.max(start.y, end.y)
+
 }
