@@ -1,12 +1,16 @@
 package com.bignerdranch.android.sunset
 
-import android.animation.AnimatorSet
-import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
+import android.animation.*
+import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateInterpolator
+import android.view.animation.Animation
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
@@ -15,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sceneView:View
     private lateinit var sunView:View
     private lateinit var skyView:View
+    private lateinit var burningAnimator: ValueAnimator
 
     private val blueSkyColor: Int by lazy {
         ContextCompat.getColor(this, R.color.blue_sky)
@@ -28,6 +33,14 @@ class MainActivity : AppCompatActivity() {
         ContextCompat.getColor(this, R.color.night_sky)
     }
 
+    private val brightSunColor: Int by lazy {
+        ContextCompat.getColor(this, R.color.bright_sun)
+    }
+
+    private val burningSunColor: Int by lazy {
+        ContextCompat.getColor(this, R.color.burning_sun)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,10 +48,27 @@ class MainActivity : AppCompatActivity() {
         sceneView = findViewById(R.id.scene)
         sunView = findViewById(R.id.sun)
         skyView = findViewById(R.id.sky)
+        burningAnimator = generateBurning()
 
+        burningAnimator.start()
         sceneView.setOnClickListener {
+            burningAnimator.pause()
             startAnimation()
         }
+    }
+
+    private fun generateBurning():ValueAnimator{
+        val burningAnimator = ValueAnimator
+            .ofInt(brightSunColor, burningSunColor)
+            .setDuration(1000)
+        burningAnimator.repeatCount = ValueAnimator.INFINITE
+        burningAnimator.repeatMode = ValueAnimator.REVERSE
+        burningAnimator.setEvaluator(ArgbEvaluator())
+        burningAnimator.addUpdateListener {
+            val background = (sunView as ImageView).drawable as GradientDrawable
+            background.setColor(it.animatedValue as Int)
+        }
+        return burningAnimator
     }
 
     private fun startAnimation(){
@@ -89,6 +119,7 @@ class MainActivity : AppCompatActivity() {
             animatorSet.play(nightSkyAnimator)
                 .with(heightAnimator) // 같이 작동하는 애니메이션
                 .before(sunsetSkyAnimator) // 이 애니메이션 전에 작동하기
+                .before(burningAnimator)
             animatorSet.start()
             shouldRise = false
         }
