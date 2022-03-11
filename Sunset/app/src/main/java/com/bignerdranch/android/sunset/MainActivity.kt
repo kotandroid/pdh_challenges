@@ -104,7 +104,11 @@ class MainActivity : AppCompatActivity() {
             isRising = false
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val playtime = animatorSet.currentPlayTime
+                animatorSet.pause()
                 animatorSet.reverse()
+                animatorSet.currentPlayTime = animatorSet.totalDuration - playtime
+
             }
             burningAnimator.start()
             isRising = true
